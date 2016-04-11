@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% block title %}首页{% endblock %}
+{% block noheader %}
+<!-- BEGIN HEADER -->
+    <div role="navigation" class="navbar header no-margin">
+        <div class="container">
+            <div class="navbar-header">
+                <!-- BEGIN RESPONSIVE MENU TOGGLER -->
+                <button data-target=".navbar-collapse" data-toggle="collapse" class="navbar-toggle" type="button">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <!-- END RESPONSIVE MENU TOGGLER -->
+                <a href="/" class="navbar-brand">商城系统</a><!-- LOGO -->
+            </div>
+            <!-- BEGIN CART -->
+            <div class="cart-block">
+                <div class="cart-info">
+                    <a href="javascript:void(0);" class="cart-info-value">总计：￥{{cart.total_price}}</a>
+                </div>
+                <a href="{% url 'cart' %}"<i class="fa fa-shopping-cart"></i><a>
+                <!-- BEGIN CART CONTENT -->
+                <div class="cart-content-wrapper">
+                  <div class="cart-content">
+                    <ul class="scroller" style="height: 250px;">
+                       <li> 
+                      <strong><a href="item.html">名称</a></strong>
+                        <span class="cart-content-count">数量</span> 
+                        <em>小计</em>
+                      </li>
+                    {% for item in cart.items %}
+                      <li> 
+                      <strong><a href="item.html">{{item.good.name}}</a></strong>
+                        <span class="cart-content-count">x{{item.count}}</span> 
+                        <em>{% widthratio item.count 1 item.price %}</em>
+                      </li>
+                      {% endfor %}
+                    </ul>
+                    <div class="text-right">
+                      <a href="/cart/" class="btn btn-default">购物车</a>
+                      <a href="/pay/" class="btn btn-primary">结算</a>
+                    </div>
+                  </div>
+                </div>
+                <!-- END CART CONTENT -->
+            </div>
+            <!-- END CART -->
+            <!-- BEGIN TOP SEARCH -->
+              <div style="margin-top:24px;width:600px">
+                    <form action="/search/" method="get">
+                         <div class="input-group">
+                              <input type="text" name='search' class="form-control">
+                              <span class="input-group-btn">
+                                    <button class="btn btn-primary" type="submit">搜索</button>
+                              </span>
+                          </div>
+                    </form>
+               </div>     
+              <!-- END TOP SEARCH -->
+        </div>
+            <!-- BEGIN NAVIGATION -->
+            <div class="collapse navbar-collapse mega-menu">
+                <ul class="nav navbar-nav">
+                    <li class="dropdown">
+                      <a class="dropdown-toggle" data-toggle="dropdown" data-delay="0" data-close-others="false" data-target="product-list.html" href="product-list.html">
+                        	商品分类
+                        <i class="fa fa-angle-down"></i>
+                      </a>
+                      <!-- BEGIN DROPDOWN MENU -->
+                      <ul class="dropdown-menu" aria-labelledby="mega-menu">
+                        <li>
+                          <div class="nav-content">
+                            <!-- BEGIN DROPDOWN MENU - COLUMN -->
+                            {% for c1 in cate %}
+                            <div class="nav-content-col">
+                              <h3>{{c1.name}}</h3>
+                              <ul>
+                              {% for c2 in cate2 %}
+                              	{% ifequal c2.pid_id c1.id %} 
+                                <li><a href="list/{{c2.id}}/">{{c2.name}}</a></li>
+                                {% endifequal %}
+                                {% endfor %}
+                              </ul>
+                            </div>
+                            {% endfor %}
+                            <!-- END DROPDOWN MENU - COLUMN --
+                          </div>
+                        </li>
+                      </ul>
+                      <!-- END DROPDOWN MENU -->
+                    </li>                   
+                </ul>
+            </div>
+            <!-- END NAVIGATION -->        
+    </div>
+    <!-- END HEADER --> 
+{% endblock %}
+
+  
+    <div class="main">
+      <div class="container">
+        <!-- BEGIN SALE PRODUCT & NEW ARRIVALS -->
+        <div class="row margin-bottom-40">
+        {% block body %}
+          <!-- BEGIN SALE PRODUCT -->
+          <div class="col-md-12 sale-product">
+            <div class="bxslider-wrapper">
+              <ul class="bxslider" data-slides-phone="1" data-slides-tablet="2" data-slides-desktop="5" data-slide-margin="15">
+                {% for g in goods %}
+                <li>
+                  <div class="product-item">
+                    <div class="pi-img-wrapper">
+                      <img src="" class="img-responsive" alt="Berry Lace Dress" />
+                    </div>
+                    <h3><a href="item/{{g.id}}/">{{g.name}}</a></h3>
+                    <div class="pi-price">{{g.sale_price}}</div>
+                    <a  class="btn btn-default add2cart" aa={{g.id}}>加入购物车</a>
+
+                  </div>
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+          <!-- END SALE PRODUCT -->
+          {% endblock %}
+{% block js %}
+<script>
+	$(document).ready(function() {
+		$('.add2cart').each(function(){
+			$(this).click(function(){
+				id=$(this).attr('aa')
+				gid={'goodid':id}
+				console.log(gid)
+			$.get('/addcart/',gid,function(returndata){
+					console.log(returndata)
+			})
+		})
+		})
+	})
+</script>
+{% endblock %}

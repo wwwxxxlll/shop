@@ -1,0 +1,96 @@
+{% extends 'index.html' %}
+{% block title %}用户中心{% endblock %}
+{% block noheader %}
+<div align='center'>
+ <div class="col-sm-3 ">
+        <ul class="list-group" >
+            {% for g in name%}
+                <li class="list-group-item glist">
+                    <span class="badge">{{ g.email }}</span>
+                    {{ g.name }}
+                </li>
+                <ul class="list-group" style="display: none"  >
+                        <li class="list-group-item host-li"  >
+                            <a name_id= {{ g.id }}>{{ g.name }}:{{ g.sex }}:{{ g.birthday }}</a>                    
+                    </li>                 
+                </ul>
+            {% endfor %}
+        </ul>
+    </div>
+<div class="col-xs-9">
+	{%if hostdata %}
+	<table class="table">
+		<tr>
+			<td>姓名</td>
+			<td>性别</td>
+			<td>生日</td>
+			<td>电话</td>
+			<td>邮箱</td>
+			<td>地址</td>
+			<td>注册时间</td>
+			<td>修改个人信息</td>
+		</tr>
+		{% for u in hostdata %}
+		<tr class="shu" >
+			<td hostname="name">{{u.name}}</td>
+			<td hostname="sex">{{u.sex}}</td>
+			<td hostname="birthday">{{u.birthday}}</td>
+			<td hostname="tel">{{u.tel}}</td>
+			<td hostname="code">{{u.code}}</td>
+			<td hostname="address">{{u.address}}</td>
+			<td hostname="createtime">{{u.createtime}}</td>
+			<td>
+				<a id=textedit>修改</a>
+				<a id=textsave>保存</a>
+			</td>
+		</tr>
+		{% endfor %}
+	</table>
+	{% endif %}
+</div>
+	    
+{% endblock %}
+{% block body %}{% endblock %}
+{% block js %}
+    <script src="/static/js/jquery-2.1.4.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.glist').click(function () {
+                $(this).next().toggle()
+            })
+            $('.host-li a').each(function () {
+                hoid = $(this).attr('name_id');
+                $(this).prop('href', "/profile/?name_id=" + hoid)
+            })
+            $('#textedit').click(function(){
+                $('.shu td').each(function(){
+                    if (this.childElementCount==0) {
+                        var tdval=$(this).html();
+                        var edit="<input type='text' value =" + tdval + ">";
+                        $(this).html(edit);
+
+                    }
+                })
+
+            })
+            $('#textsave').click(function(){
+                data_dic={'name_id':'{{ hostdata.id }}'};
+                $('.shu td input').each(function(){
+                    var key=$(this).parent().attr('hostname')
+                    var inputval=this.value
+                    data_dic[key]=inputval
+                })
+                $.get('/list_add/',data_dic,function(returndata){
+                    console.log(returndata)
+                    if (returndata==("successful")){
+                        $('.shu td input').each(function(){
+                            $(this).parent().html(this.value)
+                        })
+                    }
+                })
+            })
+
+        })
+    </script>
+
+{% endblock %}
